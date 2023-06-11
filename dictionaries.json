@@ -1,0 +1,4 @@
+{
+    "eng":  "./dicts/English-dict.txt",
+    "ua":   "./dicts/Ukrainian-dict.txt"
+}
