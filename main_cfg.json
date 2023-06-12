@@ -1,0 +1,8 @@
+{
+    "round_time":       5,
+    "rounds":           10,
+    "correct_answer":   1,
+    "bright_answer":    10,
+    "skips":            5,
+    "embeds_clr":       "#8d2edb"
+}

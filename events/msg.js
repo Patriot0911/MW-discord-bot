@@ -1,6 +1,6 @@
-const { activeServers } = require('../globals');
+const { activeServers, Dlist } = require('../globals');
 const { Events } = require('discord.js');
-const { checkWord } = require('../words_tools');
+const { getMainCfg } = require('../tools');
 
 const checkWord = (leng, word) => Dlist.get(leng).includes(word);
 
@@ -18,11 +18,12 @@ module.exports = {
             }else{
                 gameInfo.usedWords.push(word);
                 const count = gameInfo.users.get(data.author.id) ? gameInfo.users.get(data.author.id) : 0;
+                const cfg = getMainCfg();
                 if(word === gameInfo.task.word){
-                    gameInfo.users.set(data.author.id, count+4);
+                    gameInfo.users.set(data.author.id, count + cfg['bright_answer']);
                     data.react('🔥');
                 }else{
-                    gameInfo.users.set(data.author.id, count+1);
+                    gameInfo.users.set(data.author.id, count + cfg['correct_answer']);
                     data.react('✅');
                 }
             }

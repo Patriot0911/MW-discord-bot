@@ -1,0 +1,50 @@
+{
+    "eng":{
+        "title": "Magic Words",
+        "description": "The game of **Magic Words** has begun!\nStart typing words with the part of the given word and get victory points for it.\n\n**Conditions:**",
+        "conditions":
+        {
+            "Skips":
+            {
+                "value": "> If nobody knows the word with such part, you lose one HP. From the beginning, you have **[${skips}]** of these HP, if this number reaches zero - you lose"
+            },
+            "Language":
+            {
+                "value": "> Words can only be entered in the language in which the game was started"
+            },
+            "Round":
+            {
+                "value": "> You have **[${round_time}]** seconds for each word. If no one has time to enter at least one word, the HP of the game are reduced by one"
+            },
+            "Duration":
+            {
+                "value": "> Total game duration **[${rounds}x${round_time}]** seconds"
+            }
+        },
+        "stop": "The game was stopped *by* ${user}"
+    },
+    "ua":{
+        "title": "Чарівні Слова",
+        "description": "Гра у **Чарівні слова** розпочата!\nПочніть вводити слова на відповідну частинку слова, і отримуйте за це очки для перемоги.\n\n**Умови гри:**",
+        "conditions":
+        {
+            "Пропуски":
+            {
+                "value": "> Якщо ви не знаєте слова на цю частинку - то ви втрачаєте одне серце. З самого початку, ви маєте **[${skips}]** таких серця, але якщо їх кількість дійде до нуля - ви програєте"
+            },
+            "Мова":
+            {
+                "value": "> Вводити слова можна лише тією мовою, якою було розпочато гру"
+            },
+            "Раунд":
+            {
+                "value": "> На кожне слово ви маєте **[${round_time}]** секунд. Якщо ніхто не встигає ввести хоч одне слово - серця гри зменшуються на одне"
+            },
+            "Тривалість":
+            {
+                "value": "> Загальна тривалість гри **[${rounds}x${round_time}]** секунд"
+            }
+        },
+        "stop": "Гра була примусово зупинена *by* ${user}"
+    }
+}

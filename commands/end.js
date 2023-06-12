@@ -1,18 +1,6 @@
 const { EmbedBuilder } = require('discord.js')
-const { activeServers, Dlist } = require('../globals');
-
-
-const lengChoices = () => {
-    const arr = [ ];
-    const list = [ ...Dlist.keys() ];
-    for(let i = 0; i < list.length; i++){
-        arr.push({
-            name: list[i],
-            value: i
-        });
-    }
-    return arr;
-}
+const { activeServers } = require('../globals');
+const { getMainCfg, getTranslateData } = require('../tools');
 
 module.exports = {
     name:   'end',
@@ -20,15 +8,24 @@ module.exports = {
     async command(client, interaction)
     {
         await interaction.deferReply({ephemeral: true});
-        if(activeServers.get(interaction.guildId)){
+        const gameInfo = activeServers.get(interaction.guildId);
+        if(gameInfo){
+            const lengdata = getTranslateData(gameInfo['leng']);
             const em_stop = new EmbedBuilder()
-            .setColor('#8d2edb')
-            .setTitle('Magic Words')
-            .setDescription(`Гра була примусово зупинена *by* ${interaction.author}`)
+            .setColor(getMainCfg()['embeds_clr'])
+            .setTitle(lengdata['title'])
+            .setDescription(lengdata['stop'].replace('${user}', `${interaction.author}`))
+            .setFooter({
+                text: 'Magic Words',
+                iconURL: 'https://cdn.discordapp.com/avatars/1116428832354869290/67a529a6ed5a5b87e1154d7b7e45cdf1.png?size=2048'
+            })
             await interaction.channel.send({
                 embeds: [em_stop]
             });
             activeServers.delete(interaction.guildId);
+            clearTimeout(activeServers.get(`${interaction.guildId}_timer`));
+            activeServers.delete(`${interaction.guildId}_timer`);
+
             await interaction.editReply({
                 content: '> **[UA]** Ви примусово зупинили гру \n> **[ENG]** You have forcibly stopped the game'
             });

@@ -1,6 +1,7 @@
 const { ApplicationCommandOptionType, EmbedBuilder } = require('discord.js')
 const { activeServers, Dlist } = require('../globals');
 const { getWordWithPart, sendWord } = require('../words_tools');
+const { getTranslateData, getMainCfg } = require('../tools');
 
 const GameTimer = async (channel, gameObj, times = 0) => {
     if(!gameObj.usedWords.length){
@@ -11,12 +12,13 @@ const GameTimer = async (channel, gameObj, times = 0) => {
             content: 'Game over!'
         });
         activeServers.delete(channel.guild.id);
-        return;
+        return null;
     }
     gameObj.task = getWordWithPart(gameObj.leng);
     gameObj.usedWords = [];
     await sendWord(channel, gameObj);
-    setTimeout(GameTimer, 10000, channel, gameObj, times+1);
+    const game_timer = setTimeout(GameTimer, 10000, channel, gameObj, times+1);
+    activeServers.set(`${channel.guild.id}_timer`, game_timer);
 }
 
 const lengChoices = () => {
@@ -52,8 +54,26 @@ module.exports = {
             });
             return;
         }
+
+
+        const cfg = getMainCfg();
+        const cfg_keys = Object.keys(cfg);
+        const lengdata = getTranslateData(interaction.options.getString('leng'));
+        const arr = [];
+        const cond_keys = Object.keys(lengdata['conditions']);
+        let value = '';
+        for(let i = 0; i < cond_keys.length; i++){
+            value = lengdata['conditions'][cond_keys[i]].value;
+            for(l = 0; l < cfg_keys.length; l++){
+                value = value.replaceAll('${' + cfg_keys[l] + '}', cfg[cfg_keys[l]]);
+            }
+            arr.push({
+                name: cond_keys[i],
+                value: value
+            });
+        }
         const gameObj = {
-            skips: 3,
+            skips: cfg['skips'],
             channel: interaction.channel.id,
             leng: interaction.options.getString('leng'),
             usedWords: [],
@@ -61,27 +81,10 @@ module.exports = {
         };
         activeServers.set(interaction.guildId, gameObj);
         const emb_start = new EmbedBuilder()
-        .setColor('#8d2edb')
-        .setTitle('Magic Words')
-        .setDescription('Гра у **Чарівні слова** розпочата!\nПочніть вводити слова на відповідну частинку слова, і отримуйте за це очки для перемоги.\n\n**Умови гри:**')
-        .addFields(
-            {
-                name: 'Пропуски',
-                value: '> Якщо ви не знаєте слова на цю частинку - то ви втрачаєте одне серце. З самого початку, ви маєте **[3]** таких серця, але якщо їх кількість дійде до нуля - ви програєте'
-            },
-            {
-                name: 'Мова',
-                value: '> Вводити слова можна лише тією мовою, якою було розпочато гру'
-            },
-            {
-                name: 'Раунд',
-                value: '> На кожне слово ви маєте **[5]** секунд. Якщо ніхто не встигає ввести хоч одне слово - серця гри зменшуються на одне'
-            },
-            {
-                name: 'Тривалість',
-                value: '> Загальна тривалість гри **[60]** секунд'
-            }
-        )
+        .setColor(cfg['embeds_clr'])
+        .setTitle(lengdata['title'])
+        .setDescription(lengdata['description'])
+        .addFields(arr)
         .setTimestamp()
         .setFooter({
             text: 'Magic Words',

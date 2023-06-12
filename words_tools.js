@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const { Dlist } = require('./globals');
+const { getMainCfg } = require('./tools');
 
 const getRandomPart = (word) => {
     const startIndex = Math.floor(Math.random()*(word.length - 3));
@@ -16,7 +17,7 @@ const getWordWithPart = (leng = 'eng') => {
 };
 
 const sendWord = async(channel, gameObj) => {
-    const heartsmax = 3;
+    const heartsmax = getMainCfg()['skips'];
     let str = '';
     for(let i = 0; i < heartsmax; i++){
         if(i <= gameObj.skips){

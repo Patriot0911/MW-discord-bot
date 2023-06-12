@@ -1,5 +1,5 @@
 const { Events, Collection, REST, Routes } = require('discord.js');
-const { clrlog, loadDictSettings } = require('../tools');
+const { loadDictSettings } = require('../tools');
 const fs = require('node:fs');
 const { clientid, token } = require('../secret.json');
 const rest = new REST().setToken(token);
@@ -26,6 +26,6 @@ module.exports = {
         console.clear();
         await loadDictSettings();
         await parseCommands(client);
-        clrlog(`{green}[${client.user.username}]{/green} Ready to battle!`);
+        console.log(`\x1b[32m[${client.user.username}]\x1b[0m Ready to battle!`);
     }
 }

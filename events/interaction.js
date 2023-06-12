@@ -6,13 +6,6 @@ module.exports = {
 	{
 		if (interaction.isChatInputCommand()) 
 		{
-			if(!interaction.member.permissions.has('BAN_MEMBERS')){
-				interaction.reply({
-					ephemeral: true,
-					content: '> У вас не вистачає прав для цієї дії'
-				})
-				return;
-			}
 			const _args = [];
 			if(!client.commands.get(interaction.commandName))
 				return;
