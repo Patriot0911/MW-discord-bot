@@ -21,6 +21,7 @@
                 "value": "> Total game duration **[${rounds}x${round_time}]** seconds"
             }
         },
+        "gameOver": "**Game Over!**",
         "stop": "The game was stopped *by* ${user}"
     },
     "ua":{
@@ -45,6 +46,7 @@
                 "value": "> Загальна тривалість гри **[${rounds}x${round_time}]** секунд"
             }
         },
+        "gameOver": "***Кінець Гри!***",
         "stop": "Гра була примусово зупинена *by* ${user}"
     }
 }

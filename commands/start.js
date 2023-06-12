@@ -1,25 +1,54 @@
-const { ApplicationCommandOptionType, EmbedBuilder } = require('discord.js')
+const { ApplicationCommandOptionType, EmbedBuilder, AttachmentBuilder } = require('discord.js')
 const { activeServers, Dlist } = require('../globals');
-const { getWordWithPart, sendWord } = require('../words_tools');
-const { getTranslateData, getMainCfg } = require('../tools');
+const { getTranslateData, getMainCfg, getWordWithPart, sendWord } = require('../tools');
+
+const sendGameOver = async(channel, gameObj) => {
+    const attach = new AttachmentBuilder('./assets/finish_img.png');
+    const lengdata = getTranslateData(gameObj['leng']);
+    const sortedUsers = new Map([...gameObj.users].sort((val1, val2) => val2[1] - val1[1]));
+    const sorted_keys = [...sortedUsers.keys()];
+    const arr = [];
+    for(let i = 0; i < 10; i++){
+        if(!sorted_keys[i]) break;
+        arr.push({
+            name: ' ',
+            value: `<@${sorted_keys[i]}> [${sortedUsers.get(sorted_keys[i])} points]\n`
+        });
+    }
+    const finish_embed = new EmbedBuilder()
+    .setTitle(lengdata['title'])
+    .setDescription(lengdata['gameOver'])
+    .addFields(arr)
+    .setColor(getMainCfg()['embeds_clr'])
+    .setThumbnail('attachment://finish_img.png')
+    .setTimestamp()
+    .setFooter({
+        text: 'Magic Words',
+        iconURL: 'https://cdn.discordapp.com/avatars/1116428832354869290/67a529a6ed5a5b87e1154d7b7e45cdf1.png?size=2048'
+    })    
+    await channel.send({
+        embeds: [finish_embed],
+        files: [attach]
+    });
+};
 
 const GameTimer = async (channel, gameObj, times = 0) => {
     if(!gameObj.usedWords.length){
         --gameObj.skips;
     }
-    if(times*5 >= 60 || gameObj.skips < 0){
-        await channel.send({
-            content: 'Game over!'
-        });
+    const cfg = getMainCfg();
+    if(times*cfg.round_time >= cfg.rounds*cfg.round_time || gameObj.skips < 0){
+        sendGameOver(channel, {...gameObj})
         activeServers.delete(channel.guild.id);
-        return null;
+        activeServers.delete(`${channel.guild.id}_timer`);
+        return;
     }
     gameObj.task = getWordWithPart(gameObj.leng);
     gameObj.usedWords = [];
     await sendWord(channel, gameObj);
     const game_timer = setTimeout(GameTimer, 10000, channel, gameObj, times+1);
     activeServers.set(`${channel.guild.id}_timer`, game_timer);
-}
+};
 
 const lengChoices = () => {
     const arr = [ ];
@@ -31,7 +60,7 @@ const lengChoices = () => {
         });
     }
     return arr;
-}
+};
 
 module.exports = {
     name:   'start',
@@ -54,8 +83,7 @@ module.exports = {
             });
             return;
         }
-
-
+        
         const cfg = getMainCfg();
         const cfg_keys = Object.keys(cfg);
         const lengdata = getTranslateData(interaction.options.getString('leng'));
@@ -80,18 +108,21 @@ module.exports = {
             users: new Map().set(interaction.author.id, 0)
         };
         activeServers.set(interaction.guildId, gameObj);
+        const attach = new AttachmentBuilder('./assets/wand_img.png');
         const emb_start = new EmbedBuilder()
         .setColor(cfg['embeds_clr'])
         .setTitle(lengdata['title'])
         .setDescription(lengdata['description'])
         .addFields(arr)
+        .setThumbnail('attachment://wand_img.png')
         .setTimestamp()
         .setFooter({
             text: 'Magic Words',
             iconURL: 'https://cdn.discordapp.com/avatars/1116428832354869290/67a529a6ed5a5b87e1154d7b7e45cdf1.png?size=2048'
         })
         await interaction.channel.send({
-            embeds: [emb_start]
+            embeds: [emb_start],
+            files: [attach]
         });
         GameTimer(interaction.channel, gameObj);
         await interaction.editReply({
