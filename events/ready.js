@@ -1,4 +1,4 @@
-const { Events, Collection, REST, Routes } = require('discord.js');
+const { Events, Collection, REST, Routes, ActivityType } = require('discord.js');
 const { loadDictSettings } = require('../tools');
 const fs = require('node:fs');
 const { clientid, token } = require('../secret.json');
@@ -26,6 +26,16 @@ module.exports = {
         console.clear();
         await loadDictSettings();
         await parseCommands(client);
+        client.user.setActivity({
+            name: `for ${client.guilds.cache.size > 100 ? '100+' : client.guilds.cache.size} Magic Guilds`,
+            type: ActivityType.Watching
+        })
+        setInterval(() => {
+            client.user.setActivity({
+                name: `for ${client.guilds.cache.size > 100 ? '100+' : client.guilds.cache.size} Magic Guilds`,
+                type: ActivityType.Watching
+            })
+        }, 600000)
         console.log(`\x1b[32m[${client.user.username}]\x1b[0m Ready to battle!`);
     }
 }
